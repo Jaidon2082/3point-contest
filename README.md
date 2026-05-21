@@ -1,4 +1,4 @@
-# 🏀 3-Point Contest Scorekeeper
+# 3-Point Contest Scorekeeper
 
 A lightweight, browser-based scoring app for running basketball 3-point shooting contests. No installation, no internet required, no backend — just open the file and start scoring.
 
