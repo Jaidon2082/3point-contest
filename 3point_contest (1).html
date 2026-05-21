@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3-Point Contest Scorekeeper</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #E8560A;
+    --orange-dark: #B8420A;
+    --orange-light: #FFF0E8;
+    --court: #C8A96E;
+    --court-dark: #A0804A;
+    --bg: #111318;
+    --bg2: #1A1D24;
+    --bg3: #22262F;
+    --text: #F0EDE8;
+    --muted: #888;
+    --border: rgba(255,255,255,0.1);
+    --green: #2ECC71;
+    --miss: #555;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: var(--orange);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  header span {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .save-indicator {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(46,204,113,0.15);
+    color: var(--green);
+    display: none;
+  }
+  .save-indicator.visible { display: inline-block; }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg2);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--orange);
+    color: #fff;
+  }
+  .tab-btn:hover:not(.active) {
+    background: var(--bg3);
+    color: var(--text);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    color: var(--orange);
+  }
+
+  /* Form */
+  .form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 1rem;
+    align-items: flex-end;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  input[type="text"] {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus { border-color: var(--orange); }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-primary:hover { background: var(--orange-dark); }
+  .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+  .btn-danger { background: #c0392b; color: #fff; }
+  .btn-danger:hover { background: #a93226; }
+  .btn-success { background: var(--green); color: #111; }
+
+  /* Rack scoring grid */
+  .rack-section { margin-bottom: 1.5rem; }
+
+  .rack-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .rack-label span { color: var(--orange); }
+
+  .balls-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ball-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--miss);
+    background: var(--bg3);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .ball-btn .pts { font-size: 14px; color: var(--text); }
+  .ball-btn .lbl { font-size: 9px; color: var(--muted); }
+
+  .ball-btn.made {
+    background: var(--green);
+    border-color: var(--green);
+    color: #111;
+  }
+  .ball-btn.made .pts, .ball-btn.made .lbl { color: #111; }
+  .ball-btn.money-ball.made {
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+  .ball-btn.money-ball { border-color: var(--orange); }
+  .ball-btn.money-ball .pts { color: var(--orange); }
+
+  /* Score display */
+  .score-bar {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+  }
+
+  .score-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--orange);
+    line-height: 1;
+  }
+
+  .score-meta { text-align: right; }
+  .score-meta .name { font-size: 18px; font-weight: 600; }
+  .score-meta .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* Contestants list */
+  .contestant-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .contestant-row:last-child { border-bottom: none; }
+
+  .rank-badge {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .rank-badge.gold { background: #F5A623; color: #111; }
+  .rank-badge.silver { background: #AAAAAA; color: #111; }
+  .rank-badge.bronze { background: #CD7F32; color: #111; }
+
+  .contestant-name { flex: 1; font-weight: 500; font-size: 15px; }
+  .contestant-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--orange);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .contestant-detail {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .action-btns { display: flex; gap: 6px; }
+
+  /* Results panel */
+  .winner-banner {
+    background: linear-gradient(135deg, #E8560A 0%, #B8420A 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .winner-banner .trophy { font-size: 48px; margin-bottom: 8px; }
+  .winner-banner h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 4px;
+  }
+  .winner-banner .winner-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .winner-banner .winner-score {
+    font-size: 22px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 4px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 8px; }
+
+  .status-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .status-scored { background: rgba(46,204,113,0.15); color: var(--green); }
+  .status-pending { background: rgba(232,86,10,0.15); color: var(--orange); }
+
+  .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+
+  /* Export area */
+  #export-text {
+    width: 100%;
+    min-height: 200px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    .form-row { flex-direction: column; }
+    .score-big { font-size: 40px; }
+    header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">🏀</div>
+  <h1>3-Point Contest Scorekeeper</h1>
+  <span id="header-count" style="margin-left:auto;">0 contestants</span>
+  <span class="save-indicator" id="save-indicator">✓ Saved</span>
+</header>
+
+<div id="restore-banner" style="display:none;background:#1a2e1a;border-bottom:1px solid #2ECC71;padding:10px 2rem;font-size:13px;color:#2ECC71;align-items:center;gap:12px;">
+  <span>💾 Previous session data restored — scores are safe.</span>
+  <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px;" onclick="clearSavedData()">Clear &amp; Start Fresh</button>
+</div>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('entry')">📋 Score Entry</button>
+    <button class="tab-btn" onclick="switchTab('standings')">🏆 Standings</button>
+    <button class="tab-btn" onclick="switchTab('export')">💾 Export</button>
+  </div>
+
+  <!-- SCORE ENTRY TAB -->
+  <div id="tab-entry" class="tab-panel active">
+
+    <div class="card">
+      <h2>Add Contestant</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Contestant Name</label>
+          <input type="text" id="contestant-name" placeholder="Enter player name..." />
+        </div>
+        <button class="btn btn-primary" onclick="startScoring()">Start Scoring →</button>
+      </div>
+    </div>
+
+    <div id="scoring-section" style="display:none;">
+      <div class="score-bar">
+        <div>
+          <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Current Score</div>
+          <div class="score-big" id="live-score">0</div>
+        </div>
+        <div class="score-meta">
+          <div class="name" id="live-name">—</div>
+          <div class="sub" id="live-subtitle">Click balls to score</div>
+        </div>
+      </div>
+
+      <!-- 5 Racks -->
+      <div class="card">
+        <h2>Rack Scoring</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1.2rem;">Each rack has 4 regular balls (1 pt) + 1 money ball (2 pts). Click to toggle made/missed.</p>
+
+        <div id="racks-container"></div>
+
+        <div class="flex-row" style="margin-top:1rem;">
+          <button class="btn btn-success" onclick="saveContestant()">✓ Save Score</button>
+          <button class="btn btn-secondary" onclick="resetRacks()">↺ Reset Rack</button>
+          <button class="btn btn-secondary" onclick="cancelScoring()">✕ Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contestant list on entry tab -->
+    <div class="card">
+      <h2>Contestants</h2>
+      <div id="entry-contestant-list">
+        <div class="empty-state"><div class="icon">👤</div><div>No contestants yet. Add one above.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STANDINGS TAB -->
+  <div id="tab-standings" class="tab-panel">
+    <div id="standings-content">
+      <div class="empty-state"><div class="icon">🏀</div><div>No scored contestants yet.</div></div>
+    </div>
+  </div>
+
+  <!-- EXPORT TAB -->
+  <div id="tab-export" class="tab-panel">
+    <div class="card">
+      <h2>Export Results</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">Generate a text report of all results. Copy it, or download as a .txt file.</p>
+      <div class="flex-row" style="margin-bottom:1rem;">
+        <button class="btn btn-primary" onclick="generateExport()">Generate Report</button>
+        <button class="btn btn-secondary" onclick="downloadTxt()">⬇ Download .txt</button>
+        <button class="btn btn-secondary" onclick="downloadCsv()">⬇ Download .csv</button>
+        <button class="btn btn-secondary" onclick="copyExport()">⎘ Copy</button>
+      </div>
+      <textarea id="export-text" readonly placeholder="Click 'Generate Report' to see results here..."></textarea>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const RACK_NAMES = ['Rack 1 (Corner Left)', 'Rack 2 (Wing Left)', 'Rack 3 (Top of Key)', 'Rack 4 (Wing Right)', 'Rack 5 (Corner Right)'];
+const STORAGE_KEY = '3point_contestants';
+
+let contestants = [];
+let currentScoring = null;
+let saveTimer = null;
+
+// ── Persistence ──────────────────────────────────────────────
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(contestants));
+    const ind = document.getElementById('save-indicator');
+    ind.classList.add('visible');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => ind.classList.remove('visible'), 2000);
+  } catch(e) { console.warn('Could not save:', e); }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        contestants = parsed;
+        const banner = document.getElementById('restore-banner');
+        banner.style.display = 'flex';
+        renderEntryList();
+        updateHeaderCount();
+        return true;
+      }
+    }
+  } catch(e) { console.warn('Could not load:', e); }
+  return false;
+}
+
+function clearSavedData() {
+  if (confirm('Clear all scores and start fresh? This cannot be undone.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    contestants = [];
+    document.getElementById('restore-banner').style.display = 'none';
+    renderEntryList();
+    updateHeaderCount();
+  }
+}
+
+// Load on startup
+window.addEventListener('DOMContentLoaded', loadFromStorage);
+
+// ── Tabs ──────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'standings') renderStandings();
+  if (name === 'export') generateExport();
+}
+
+function startScoring() {
+  const name = document.getElementById('contestant-name').value.trim();
+  if (!name) { alert('Please enter a contestant name.'); return; }
+  currentScoring = {
+    name,
+    racks: Array.from({length: 5}, () => [false, false, false, false, false])
+  };
+  document.getElementById('live-name').textContent = name;
+  document.getElementById('contestant-name').value = '';
+  document.getElementById('scoring-section').style.display = 'block';
+  renderRacks();
+  updateLiveScore();
+}
+
+function renderRacks() {
+  const container = document.getElementById('racks-container');
+  container.innerHTML = '';
+  RACK_NAMES.forEach((rName, ri) => {
+    const div = document.createElement('div');
+    div.className = 'rack-section';
+    const rackScore = calcRackScore(ri);
+    div.innerHTML = `<div class="rack-label"><span>${rName}</span><span>${rackScore} pts</span></div><div class="balls-row" id="rack-${ri}"></div>`;
+    container.appendChild(div);
+    const row = document.getElementById('rack-' + ri);
+    for (let bi = 0; bi < 5; bi++) {
+      const isMoney = bi === 4;
+      const made = currentScoring.racks[ri][bi];
+      const btn = document.createElement('button');
+      btn.className = 'ball-btn' + (isMoney ? ' money-ball' : '') + (made ? ' made' : '');
+      btn.innerHTML = `<span class="pts">${isMoney ? '2' : '1'}</span><span class="lbl">${isMoney ? 'MB' : '●'}</span>`;
+      btn.title = isMoney ? 'Money ball (2 pts)' : 'Regular ball (1 pt)';
+      btn.onclick = () => toggleBall(ri, bi);
+      row.appendChild(btn);
+    }
+  });
+}
+
+function toggleBall(ri, bi) {
+  currentScoring.racks[ri][bi] = !currentScoring.racks[ri][bi];
+  renderRacks();
+  updateLiveScore();
+}
+
+function calcRackScore(ri) {
+  return currentScoring.racks[ri].reduce((sum, made, bi) => sum + (made ? (bi === 4 ? 2 : 1) : 0), 0);
+}
+
+function calcTotalScore() {
+  return currentScoring.racks.reduce((sum, _, ri) => sum + calcRackScore(ri), 0);
+}
+
+function calcMadeCount() {
+  return currentScoring.racks.flat().filter(Boolean).length;
+}
+
+function updateLiveScore() {
+  const total = calcTotalScore();
+  document.getElementById('live-score').textContent = total;
+  const made = calcMadeCount();
+  const moneyMade = currentScoring.racks.reduce((sum, r) => sum + (r[4] ? 1 : 0), 0);
+  document.getElementById('live-subtitle').textContent = `${made}/25 made · ${moneyMade}/5 money balls`;
+}
+
+function saveContestant() {
+  const total = calcTotalScore();
+  const rackScores = currentScoring.racks.map((_, ri) => calcRackScore(ri));
+  const made = calcMadeCount();
+  const moneyMade = currentScoring.racks.reduce((sum, r) => sum + (r[4] ? 1 : 0), 0);
+
+  contestants.push({
+    name: currentScoring.name,
+    total,
+    rackScores,
+    rackDetails: currentScoring.racks.map(r => [...r]),
+    made,
+    moneyMade,
+    timestamp: new Date().toLocaleTimeString()
+  });
+
+  contestants.sort((a, b) => b.total - a.total);
+  currentScoring = null;
+  document.getElementById('scoring-section').style.display = 'none';
+  renderEntryList();
+  updateHeaderCount();
+  saveToStorage();
+}
+
+function resetRacks() {
+  currentScoring.racks = Array.from({length: 5}, () => [false, false, false, false, false]);
+  renderRacks();
+  updateLiveScore();
+}
+
+function cancelScoring() {
+  currentScoring = null;
+  document.getElementById('scoring-section').style.display = 'none';
+}
+
+function removeContestant(idx) {
+  if (confirm(`Remove ${contestants[idx].name}?`)) {
+    contestants.splice(idx, 1);
+    renderEntryList();
+    updateHeaderCount();
+    saveToStorage();
+  }
+}
+
+function renderEntryList() {
+  const el = document.getElementById('entry-contestant-list');
+  if (contestants.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">👤</div><div>No contestants yet. Add one above.</div></div>';
+    return;
+  }
+  el.innerHTML = contestants.map((c, i) => `
+    <div class="contestant-row">
+      <div class="rank-badge ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
+      <div style="flex:1">
+        <div class="contestant-name">${c.name}</div>
+        <div class="contestant-detail">${c.made}/25 made · ${c.moneyMade}/5 money balls · scored at ${c.timestamp}</div>
+      </div>
+      <div class="contestant-score">${c.total}</div>
+      <div class="action-btns">
+        <button class="btn btn-danger" style="padding:6px 10px;font-size:12px;" onclick="removeContestant(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderStandings() {
+  const el = document.getElementById('standings-content');
+  if (contestants.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">🏀</div><div>No scored contestants yet.</div></div>';
+    return;
+  }
+
+  const winner = contestants[0];
+  const rackLabels = ['CL', 'WL', 'TK', 'WR', 'CR'];
+
+  el.innerHTML = `
+    <div class="winner-banner">
+      <div class="trophy">🏆</div>
+      <h2>Contest Winner</h2>
+      <div class="winner-name">${winner.name}</div>
+      <div class="winner-score">${winner.total} points · ${winner.made}/25 made</div>
+    </div>
+    <div class="card">
+      <h2>Full Standings</h2>
+      ${contestants.map((c, i) => `
+        <div class="contestant-row">
+          <div class="rank-badge ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
+          <div style="flex:1">
+            <div class="contestant-name">${c.name}</div>
+            <div class="contestant-detail" style="margin-top:4px;">
+              ${c.rackScores.map((s,ri) => `<span style="margin-right:8px;color:var(--muted)">${rackLabels[ri]}: <strong style="color:var(--text)">${s}</strong></span>`).join('')}
+            </div>
+            <div class="contestant-detail">Made: ${c.made}/25 · Money balls: ${c.moneyMade}/5</div>
+          </div>
+          <div class="contestant-score">${c.total}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function generateExport() {
+  if (contestants.length === 0) {
+    document.getElementById('export-text').value = 'No contestants scored yet.';
+    return;
+  }
+
+  const lines = [];
+  const now = new Date().toLocaleString();
+  lines.push('='.repeat(52));
+  lines.push('       3-POINT CONTEST RESULTS');
+  lines.push(`       Generated: ${now}`);
+  lines.push('='.repeat(52));
+  lines.push('');
+  lines.push('WINNER: ' + contestants[0].name + ' — ' + contestants[0].total + ' pts');
+  lines.push('');
+  lines.push('-'.repeat(52));
+  lines.push('FULL STANDINGS');
+  lines.push('-'.repeat(52));
+
+  contestants.forEach((c, i) => {
+    lines.push('');
+    lines.push(`#${i+1}  ${c.name}  —  ${c.total} pts`);
+    lines.push(`     Made: ${c.made}/25  |  Money balls: ${c.moneyMade}/5`);
+    RACK_NAMES.forEach((rn, ri) => {
+      const balls = c.rackDetails[ri].map((m, bi) => m ? (bi===4?'[MB]':'[●]') : '[○]').join(' ');
+      lines.push(`     ${rn.padEnd(28)} ${balls}  = ${c.rackScores[ri]} pts`);
+    });
+  });
+
+  lines.push('');
+  lines.push('='.repeat(52));
+  document.getElementById('export-text').value = lines.join('\n');
+}
+
+function copyExport() {
+  generateExport();
+  const el = document.getElementById('export-text');
+  el.select();
+  document.execCommand('copy');
+  alert('Copied to clipboard!');
+}
+
+function downloadTxt() {
+  generateExport();
+  const text = document.getElementById('export-text').value;
+  const blob = new Blob([text], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '3point_contest_results.txt';
+  a.click();
+}
+
+function downloadCsv() {
+  if (contestants.length === 0) { alert('No contestants to export.'); return; }
+  const rows = [['Rank','Name','Total','Made','MoneyBalls','Rack1','Rack2','Rack3','Rack4','Rack5']];
+  contestants.forEach((c, i) => {
+    rows.push([i+1, c.name, c.total, c.made, c.moneyMade, ...c.rackScores]);
+  });
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '3point_contest_results.csv';
+  a.click();
+}
+
+function updateHeaderCount() {
+  document.getElementById('header-count').textContent =
+    contestants.length + ' contestant' + (contestants.length !== 1 ? 's' : '');
+}
+</script>
+</body>
+</html>
