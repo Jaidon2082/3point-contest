@@ -6,13 +6,15 @@ A lightweight, browser-based scoring app for running basketball 3-point shooting
 
 ## Features
 
+- **Three-round tournament format** — Round 1 for everyone, then automatic advancement of the top scorers into Round 2 and Round 3
 - **Half-court diagram** — the 5 racks are laid out on a visual half-court (corners, wings, top of key) so judges can score by position at a glance
 - **Live scoring** across 5 racks with individual ball tracking (5 balls per rack, 1 point each)
 - **Real-time score display** updates as you tap each ball made or missed
+- **Tie-aware advancement** — if multiple contestants tie at the cutoff for a round, all of them advance rather than being arbitrarily cut
+- **Sudden-death shootout** — a tied finish in Round 3 is settled with a 5-ball shootout; if that ties too, tied shooters keep shooting sudden-death rounds until one contestant pulls ahead
 - **Auto-save** — scores are written to local storage instantly so nothing is lost if the browser closes, the tab refreshes, or the device restarts
-- **Session restore** — reopening the app on the same device automatically reloads all previous scores with a confirmation banner
-- **Automatic standings** — contestants are ranked by total score at all times
-- **Winner display** — dedicated standings view crowns the leader with a full leaderboard breakdown
+- **Session restore** — reopening the app on the same device automatically reloads all previous scores, advancement state, and shootout progress with a confirmation banner
+- **Automatic standings** — full leaderboards for every round plus the champion banner, updated live
 - **Export results** as a formatted `.txt` report or `.csv` file for printing or record keeping
 - **Mobile and tablet friendly** — works great on iPad or Android tablet for sideline use
 - **Zero dependencies** — single HTML file, no frameworks, no installs, no Wi-Fi needed after opening
@@ -59,14 +61,28 @@ A lightweight, browser-based scoring app for running basketball 3-point shooting
 
 ---
 
-### Scoring a Contestant
+### Running a Contest
 
-1. Go to the **Score Entry** tab
-2. Type the contestant's name and click **Start Scoring**
-3. A half-court diagram appears with 5 racks positioned where they're actually shot from — each rack has 5 balls worth 1 point each
-4. Tap each ball to toggle it between made (green) and missed (gray)
-5. The live score updates with every tap
-6. Click **Save Score** when done — the contestant is added to the leaderboard
+The **Score Entry** tab has a sub-tab for each stage of the contest: **Round 1**, **Round 2**, **Round 3**, and **Shootout**.
+
+**Round 1**
+1. Type a contestant's name and click **Start Scoring**
+2. A half-court diagram appears with 5 racks positioned where they're actually shot from — each rack has 5 balls worth 1 point each
+3. Tap each ball to toggle it between made (green) and missed (gray)
+4. Click **Save Score** when done — the contestant is added to the leaderboard
+5. Repeat for every contestant in Round 1
+
+**Advancing to Round 2 / Round 3**
+1. Once everyone has a Round 1 (or Round 2) score, switch to the **Round 2** (or **Round 3**) sub-tab
+2. Click **Run Advance** — this promotes the top 6 scorers from Round 1 into Round 2, and the top 3 scorers from Round 2 into Round 3
+3. If multiple contestants are tied at the cutoff (e.g. tied for 6th place), **all of them advance** — nobody is cut on a coin flip
+4. Score each advancing contestant the same way as Round 1
+
+**Shootout (only if Round 3 ends in a tie)**
+1. If two or more contestants tie for the top Round 3 score, switch to the **Shootout** sub-tab
+2. Each tied contestant picks one lane and shoots 5 balls
+3. If the shootout itself ties, the app automatically starts a **sudden-death round** — only the still-tied contestants shoot again, repeating until one contestant is ahead
+4. The **Standings** tab shows the champion once the tie is fully resolved
 
 ---
 
@@ -89,9 +105,9 @@ Total possible score: **25 points**
 
 Go to the **Export** tab and choose:
 
-- **Generate Report** — produces a formatted text summary with full rack-by-rack breakdowns
+- **Generate Report** — produces a formatted text summary with rack-by-rack breakdowns for every round, plus any shootout rounds
 - **Download .txt** — saves the report as a plain text file
-- **Download .csv** — saves results in spreadsheet format (Rank, Name, Total, Rack 1–5)
+- **Download .csv** — saves results in spreadsheet format (Name, Round 1, Round 2, Round 3, Shootout)
 - **Copy** — copies the report to your clipboard
 
 ---
@@ -114,7 +130,8 @@ Scores are saved automatically to the browser's **local storage** every time a c
 - On iPad, open the app in Safari and tap **Share → Add to Home Screen** for a fullscreen app-like experience with no browser chrome
 - Keep the browser tab open throughout the event — local storage is a backup, not a replacement for leaving it open
 - Export to `.csv` at the end for a permanent record before clearing data for the next event
-- If you need to re-score a contestant, remove them with the ✕ button and re-enter them
+- If you need to re-score a contestant, remove them with the ✕ button and re-enter them (note: this deletes all of their round scores, so they'd need to be re-entered from Round 1)
+- Don't click **Run Advance** until every contestant in the current round has been scored — it only considers contestants who already have a score
 
 ---
 
