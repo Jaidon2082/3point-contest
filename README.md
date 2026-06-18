@@ -6,7 +6,8 @@ A lightweight, browser-based scoring app for running basketball 3-point shooting
 
 ## Features
 
-- **Live scoring** across 5 racks with individual ball tracking (4 regular balls + 1 money ball per rack)
+- **Half-court diagram** — the 5 racks are laid out on a visual half-court (corners, wings, top of key) so judges can score by position at a glance
+- **Live scoring** across 5 racks with individual ball tracking (5 balls per rack, 1 point each)
 - **Real-time score display** updates as you tap each ball made or missed
 - **Auto-save** — scores are written to local storage instantly so nothing is lost if the browser closes, the tab refreshes, or the device restarts
 - **Session restore** — reopening the app on the same device automatically reloads all previous scores with a confirmation banner
@@ -40,11 +41,29 @@ A lightweight, browser-based scoring app for running basketball 3-point shooting
 
 ---
 
+## Sharing This App
+
+**To share the code** (so someone can view, copy, or edit it): send the repo link —
+`https://github.com/Jaidon2082/3point-contest`
+
+**To share a live, working webpage** (so someone can just open a link and use it, no download needed): enable GitHub Pages once, then share that URL.
+
+1. On GitHub, go to the repo's **Settings → Pages**
+2. Under **Build and deployment → Source**, choose **Deploy from a branch**
+3. Set branch to `main`, folder to `/ (root)`, click **Save**
+4. After a minute, the live page is at:
+   `https://jaidon2082.github.io/3point-contest/`
+5. Text or email that link — it works on any phone, tablet, or laptop browser
+
+> **Important:** everyone who opens that link gets their own independent copy of the app in their own browser (see [Data & Storage](#data--storage) below). It's great for letting someone preview or use the scorekeeper on their own device, but it is **not** a shared live scoreboard — two people scoring at the same time won't see each other's entries. For one event, pick one device as "the" scorekeeper.
+
+---
+
 ### Scoring a Contestant
 
 1. Go to the **Score Entry** tab
 2. Type the contestant's name and click **Start Scoring**
-3. Five racks appear — each has 4 regular balls (1 pt each) and 1 money ball (2 pts, labeled **MB**)
+3. A half-court diagram appears with 5 racks positioned where they're actually shot from — each rack has 5 balls worth 1 point each
 4. Tap each ball to toggle it between made (green) and missed (gray)
 5. The live score updates with every tap
 6. Click **Save Score** when done — the contestant is added to the leaderboard
@@ -61,8 +80,8 @@ A lightweight, browser-based scoring app for running basketball 3-point shooting
 | Rack 4 | Wing Right |
 | Rack 5 | Corner Right |
 
-Each rack: 4 regular balls (1 pt) + 1 money ball (2 pts) = **6 pts max per rack**
-Total possible score: **30 points**
+Each rack: 5 balls (1 pt each) = **5 pts max per rack**
+Total possible score: **25 points**
 
 ---
 
@@ -72,7 +91,7 @@ Go to the **Export** tab and choose:
 
 - **Generate Report** — produces a formatted text summary with full rack-by-rack breakdowns
 - **Download .txt** — saves the report as a plain text file
-- **Download .csv** — saves results in spreadsheet format (Name, Total, Made, Money Balls, Rack 1–5)
+- **Download .csv** — saves results in spreadsheet format (Rank, Name, Total, Rack 1–5)
 - **Copy** — copies the report to your clipboard
 
 ---
@@ -116,11 +135,10 @@ Recommended setup for live editing:
 
 | Ball Type | Points |
 |-----------|--------|
-| Regular ball (made) | 1 pt |
-| Money ball — MB (made) | 2 pts |
+| Any ball (made) | 1 pt |
 | Any ball (missed) | 0 pts |
-| **Max per rack** | **6 pts** |
-| **Max total (5 racks)** | **30 pts** |
+| **Max per rack** | **5 pts** |
+| **Max total (5 racks)** | **25 pts** |
 
 ---
 
