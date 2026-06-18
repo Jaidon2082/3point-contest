@@ -47,7 +47,10 @@
     background: var(--orange);
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    color: #fff;
   }
 
   header h1 {
@@ -188,21 +191,6 @@
   .btn-success { background: var(--green); color: #111; }
 
   /* Rack scoring grid */
-  .rack-section { margin-bottom: 1.5rem; }
-
-  .rack-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .rack-label span { color: var(--orange); }
-
   .balls-row {
     display: flex;
     gap: 8px;
@@ -228,20 +216,72 @@
   }
 
   .ball-btn .pts { font-size: 14px; color: var(--text); }
-  .ball-btn .lbl { font-size: 9px; color: var(--muted); }
 
   .ball-btn.made {
     background: var(--green);
     border-color: var(--green);
     color: #111;
   }
-  .ball-btn.made .pts, .ball-btn.made .lbl { color: #111; }
-  .ball-btn.money-ball.made {
-    background: var(--orange);
-    border-color: var(--orange);
+  .ball-btn.made .pts { color: #111; }
+
+  /* Half-court diagram */
+  .court-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto 1.5rem;
   }
-  .ball-btn.money-ball { border-color: var(--orange); }
-  .ball-btn.money-ball .pts { color: var(--orange); }
+
+  .court-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 8px;
+  }
+
+  .court-floor { fill: var(--court); }
+  .court-line { stroke: rgba(255,255,255,0.55); stroke-width: 2; fill: none; }
+
+  .court-zone {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: rgba(17,19,24,0.65);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 5px 6px;
+  }
+
+  .zone-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    white-space: nowrap;
+    margin-bottom: 4px;
+  }
+  .zone-label .zone-score { color: var(--orange); margin-left: 4px; }
+
+  .balls-row.compact {
+    width: 100px;
+    gap: 4px;
+    justify-content: center;
+  }
+  .balls-row.compact .ball-btn {
+    width: 26px;
+    height: 26px;
+    border-width: 1.5px;
+  }
+  .balls-row.compact .ball-btn .pts { font-size: 11px; }
+
+  @media (max-width: 600px) {
+    .balls-row.compact { width: 82px; }
+    .balls-row.compact .ball-btn { width: 22px; height: 22px; }
+    .balls-row.compact .ball-btn .pts { font-size: 10px; }
+    .zone-label { font-size: 9px; }
+  }
 
   /* Score display */
   .score-bar {
@@ -315,7 +355,6 @@
     text-align: center;
     margin-bottom: 1.5rem;
   }
-  .winner-banner .trophy { font-size: 48px; margin-bottom: 8px; }
   .winner-banner h2 {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 14px;
@@ -340,8 +379,6 @@
     padding: 3rem 1rem;
     color: var(--muted);
   }
-  .empty-state .icon { font-size: 40px; margin-bottom: 8px; }
-
   .status-pill {
     display: inline-block;
     padding: 2px 10px;
@@ -382,23 +419,23 @@
 <body>
 
 <header>
-  <div class="logo-icon">🏀</div>
+  <div class="logo-icon">3P</div>
   <h1>3-Point Contest Scorekeeper</h1>
   <span id="header-count" style="margin-left:auto;">0 contestants</span>
   <span class="save-indicator" id="save-indicator">✓ Saved</span>
 </header>
 
 <div id="restore-banner" style="display:none;background:#1a2e1a;border-bottom:1px solid #2ECC71;padding:10px 2rem;font-size:13px;color:#2ECC71;align-items:center;gap:12px;">
-  <span>💾 Previous session data restored — scores are safe.</span>
+  <span>Previous session data restored — scores are safe.</span>
   <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px;" onclick="clearSavedData()">Clear &amp; Start Fresh</button>
 </div>
 
 <div class="container">
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('entry')">📋 Score Entry</button>
-    <button class="tab-btn" onclick="switchTab('standings')">🏆 Standings</button>
-    <button class="tab-btn" onclick="switchTab('export')">💾 Export</button>
+    <button class="tab-btn active" onclick="switchTab('entry')">Score Entry</button>
+    <button class="tab-btn" onclick="switchTab('standings')">Standings</button>
+    <button class="tab-btn" onclick="switchTab('export')">Export</button>
   </div>
 
   <!-- SCORE ENTRY TAB -->
@@ -430,9 +467,27 @@
       <!-- 5 Racks -->
       <div class="card">
         <h2>Rack Scoring</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:1.2rem;">Each rack has 4 regular balls (1 pt) + 1 money ball (2 pts). Click to toggle made/missed.</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1.2rem;">Tap the balls at each spot on the court. Each rack has 5 balls worth 1 point each.</p>
 
-        <div id="racks-container"></div>
+        <div class="court-wrap">
+          <svg class="court-svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <rect class="court-floor" x="1" y="1" width="398" height="298" rx="4"/>
+            <rect class="court-line" x="1" y="1" width="398" height="298" rx="4"/>
+            <path class="court-line" d="M160,299 A40,40 0 0 1 240,299"/>
+            <rect class="court-line" x="160" y="1" width="80" height="150"/>
+            <circle class="court-line" cx="200" cy="151" r="45"/>
+            <path class="court-line" d="M185,30 A15,15 0 0 1 215,30"/>
+            <rect class="court-line" x="180" y="9" width="40" height="3" fill="rgba(255,255,255,0.55)"/>
+            <circle cx="200" cy="32" r="6" fill="none" stroke="var(--orange)" stroke-width="2.5"/>
+            <path class="court-line" d="M30,1 L30,130 L95,205 L200,245 L305,205 L370,130 L370,1"/>
+          </svg>
+
+          <div class="court-zone" id="zone-0" style="left:7.5%;top:43.3%;"></div>
+          <div class="court-zone" id="zone-1" style="left:23.75%;top:68.3%;"></div>
+          <div class="court-zone" id="zone-2" style="left:50%;top:81.7%;"></div>
+          <div class="court-zone" id="zone-3" style="left:76.25%;top:68.3%;"></div>
+          <div class="court-zone" id="zone-4" style="left:92.5%;top:43.3%;"></div>
+        </div>
 
         <div class="flex-row" style="margin-top:1rem;">
           <button class="btn btn-success" onclick="saveContestant()">✓ Save Score</button>
@@ -446,7 +501,7 @@
     <div class="card">
       <h2>Contestants</h2>
       <div id="entry-contestant-list">
-        <div class="empty-state"><div class="icon">👤</div><div>No contestants yet. Add one above.</div></div>
+        <div class="empty-state"><div>No contestants yet. Add one above.</div></div>
       </div>
     </div>
   </div>
@@ -454,7 +509,7 @@
   <!-- STANDINGS TAB -->
   <div id="tab-standings" class="tab-panel">
     <div id="standings-content">
-      <div class="empty-state"><div class="icon">🏀</div><div>No scored contestants yet.</div></div>
+      <div class="empty-state"><div>No scored contestants yet.</div></div>
     </div>
   </div>
 
@@ -477,6 +532,7 @@
 
 <script>
 const RACK_NAMES = ['Rack 1 (Corner Left)', 'Rack 2 (Wing Left)', 'Rack 3 (Top of Key)', 'Rack 4 (Wing Right)', 'Rack 5 (Corner Right)'];
+const RACK_ABBR = ['CL', 'WL', 'TK', 'WR', 'CR'];
 const STORAGE_KEY = '3point_contestants';
 
 let contestants = [];
@@ -550,22 +606,18 @@ function startScoring() {
 }
 
 function renderRacks() {
-  const container = document.getElementById('racks-container');
-  container.innerHTML = '';
   RACK_NAMES.forEach((rName, ri) => {
-    const div = document.createElement('div');
-    div.className = 'rack-section';
+    const zone = document.getElementById('zone-' + ri);
+    zone.title = rName;
     const rackScore = calcRackScore(ri);
-    div.innerHTML = `<div class="rack-label"><span>${rName}</span><span>${rackScore} pts</span></div><div class="balls-row" id="rack-${ri}"></div>`;
-    container.appendChild(div);
-    const row = document.getElementById('rack-' + ri);
+    zone.innerHTML = `<div class="zone-label">${RACK_ABBR[ri]}<span class="zone-score">${rackScore}</span></div><div class="balls-row compact" id="rack-${ri}"></div>`;
+    const row = zone.querySelector('.balls-row');
     for (let bi = 0; bi < 5; bi++) {
-      const isMoney = bi === 4;
       const made = currentScoring.racks[ri][bi];
       const btn = document.createElement('button');
-      btn.className = 'ball-btn' + (isMoney ? ' money-ball' : '') + (made ? ' made' : '');
-      btn.innerHTML = `<span class="pts">${isMoney ? '2' : '1'}</span><span class="lbl">${isMoney ? 'MB' : '●'}</span>`;
-      btn.title = isMoney ? 'Money ball (2 pts)' : 'Regular ball (1 pt)';
+      btn.className = 'ball-btn' + (made ? ' made' : '');
+      btn.innerHTML = `<span class="pts">1</span>`;
+      btn.title = '1 point';
       btn.onclick = () => toggleBall(ri, bi);
       row.appendChild(btn);
     }
@@ -579,38 +631,28 @@ function toggleBall(ri, bi) {
 }
 
 function calcRackScore(ri) {
-  return currentScoring.racks[ri].reduce((sum, made, bi) => sum + (made ? (bi === 4 ? 2 : 1) : 0), 0);
+  return currentScoring.racks[ri].filter(Boolean).length;
 }
 
 function calcTotalScore() {
   return currentScoring.racks.reduce((sum, _, ri) => sum + calcRackScore(ri), 0);
 }
 
-function calcMadeCount() {
-  return currentScoring.racks.flat().filter(Boolean).length;
-}
-
 function updateLiveScore() {
   const total = calcTotalScore();
   document.getElementById('live-score').textContent = total;
-  const made = calcMadeCount();
-  const moneyMade = currentScoring.racks.reduce((sum, r) => sum + (r[4] ? 1 : 0), 0);
-  document.getElementById('live-subtitle').textContent = `${made}/25 made · ${moneyMade}/5 money balls`;
+  document.getElementById('live-subtitle').textContent = `${total}/25 made`;
 }
 
 function saveContestant() {
   const total = calcTotalScore();
   const rackScores = currentScoring.racks.map((_, ri) => calcRackScore(ri));
-  const made = calcMadeCount();
-  const moneyMade = currentScoring.racks.reduce((sum, r) => sum + (r[4] ? 1 : 0), 0);
 
   contestants.push({
     name: currentScoring.name,
     total,
     rackScores,
     rackDetails: currentScoring.racks.map(r => [...r]),
-    made,
-    moneyMade,
     timestamp: new Date().toLocaleTimeString()
   });
 
@@ -645,7 +687,7 @@ function removeContestant(idx) {
 function renderEntryList() {
   const el = document.getElementById('entry-contestant-list');
   if (contestants.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">👤</div><div>No contestants yet. Add one above.</div></div>';
+    el.innerHTML = '<div class="empty-state"><div>No contestants yet. Add one above.</div></div>';
     return;
   }
   el.innerHTML = contestants.map((c, i) => `
@@ -653,7 +695,7 @@ function renderEntryList() {
       <div class="rank-badge ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
       <div style="flex:1">
         <div class="contestant-name">${c.name}</div>
-        <div class="contestant-detail">${c.made}/25 made · ${c.moneyMade}/5 money balls · scored at ${c.timestamp}</div>
+        <div class="contestant-detail">${c.total}/25 made · scored at ${c.timestamp}</div>
       </div>
       <div class="contestant-score">${c.total}</div>
       <div class="action-btns">
@@ -666,19 +708,17 @@ function renderEntryList() {
 function renderStandings() {
   const el = document.getElementById('standings-content');
   if (contestants.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">🏀</div><div>No scored contestants yet.</div></div>';
+    el.innerHTML = '<div class="empty-state"><div>No scored contestants yet.</div></div>';
     return;
   }
 
   const winner = contestants[0];
-  const rackLabels = ['CL', 'WL', 'TK', 'WR', 'CR'];
 
   el.innerHTML = `
     <div class="winner-banner">
-      <div class="trophy">🏆</div>
       <h2>Contest Winner</h2>
       <div class="winner-name">${winner.name}</div>
-      <div class="winner-score">${winner.total} points · ${winner.made}/25 made</div>
+      <div class="winner-score">${winner.total}/25 points</div>
     </div>
     <div class="card">
       <h2>Full Standings</h2>
@@ -688,9 +728,9 @@ function renderStandings() {
           <div style="flex:1">
             <div class="contestant-name">${c.name}</div>
             <div class="contestant-detail" style="margin-top:4px;">
-              ${c.rackScores.map((s,ri) => `<span style="margin-right:8px;color:var(--muted)">${rackLabels[ri]}: <strong style="color:var(--text)">${s}</strong></span>`).join('')}
+              ${c.rackScores.map((s,ri) => `<span style="margin-right:8px;color:var(--muted)">${RACK_ABBR[ri]}: <strong style="color:var(--text)">${s}</strong></span>`).join('')}
             </div>
-            <div class="contestant-detail">Made: ${c.made}/25 · Money balls: ${c.moneyMade}/5</div>
+            <div class="contestant-detail">Made: ${c.total}/25</div>
           </div>
           <div class="contestant-score">${c.total}</div>
         </div>
@@ -721,9 +761,9 @@ function generateExport() {
   contestants.forEach((c, i) => {
     lines.push('');
     lines.push(`#${i+1}  ${c.name}  —  ${c.total} pts`);
-    lines.push(`     Made: ${c.made}/25  |  Money balls: ${c.moneyMade}/5`);
+    lines.push(`     Made: ${c.total}/25`);
     RACK_NAMES.forEach((rn, ri) => {
-      const balls = c.rackDetails[ri].map((m, bi) => m ? (bi===4?'[MB]':'[●]') : '[○]').join(' ');
+      const balls = c.rackDetails[ri].map(m => m ? '[●]' : '[○]').join(' ');
       lines.push(`     ${rn.padEnd(28)} ${balls}  = ${c.rackScores[ri]} pts`);
     });
   });
@@ -753,9 +793,9 @@ function downloadTxt() {
 
 function downloadCsv() {
   if (contestants.length === 0) { alert('No contestants to export.'); return; }
-  const rows = [['Rank','Name','Total','Made','MoneyBalls','Rack1','Rack2','Rack3','Rack4','Rack5']];
+  const rows = [['Rank','Name','Total','Rack1','Rack2','Rack3','Rack4','Rack5']];
   contestants.forEach((c, i) => {
-    rows.push([i+1, c.name, c.total, c.made, c.moneyMade, ...c.rackScores]);
+    rows.push([i+1, c.name, c.total, ...c.rackScores]);
   });
   const csv = rows.map(r => r.join(',')).join('\n');
   const blob = new Blob([csv], {type: 'text/csv'});
